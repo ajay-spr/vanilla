@@ -29,6 +29,11 @@ const data = [
 
 var currentItem = data[0].title;
 
+const removeInstructions = () => {
+  const instructions = document.getElementById("instructions");
+  instructions.style.display = "none";
+};
+
 const setAsActive = (e) => {
   const items = document.querySelectorAll(".item");
   items.forEach((item) => {
