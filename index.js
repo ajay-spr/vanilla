@@ -30,6 +30,12 @@ const data = [
 // keeping track of the current active item
 var currentItem = data[0].title;
 
+// remove instructions from page
+const removeInstructions = () => {
+  const instructions = document.getElementById("instructions");
+  instructions.remove();
+};
+
 // set the item as active in sidebar
 const setAsActive = (e) => {
   const items = document.querySelectorAll(".item");
@@ -94,7 +100,6 @@ const propagateTitleChange = (newTitle) => {
   const activeItem = document.querySelector(".active-item");
   activeItem.children[1].innerHTML = newTitle;
 };
-
 // init the app on startup
 const init = () => {
   updateDOM();
