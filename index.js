@@ -27,13 +27,10 @@ const data = [
   },
 ];
 
+// keeping track of the current active item
 var currentItem = data[0].title;
 
-const removeInstructions = () => {
-  const instructions = document.getElementById("instructions");
-  instructions.style.display = "none";
-};
-
+// set the item as active in sidebar
 const setAsActive = (e) => {
   const items = document.querySelectorAll(".item");
   items.forEach((item) => {
@@ -42,33 +39,37 @@ const setAsActive = (e) => {
   e.currentTarget.classList.add("active-item");
 };
 
+// update the image in the main section
 const updateImage = (title) => {
   const image = document.getElementById("image");
   const item = data.find((item) => item.title === title);
 
+  // image styles
   image.style.background = `url("${item.previewImage}")`;
   image.style.backgroundRepeat = "no-repeat";
   image.style.backgroundPosition = "center center";
   image.style.backgroundSize = "cover";
 };
 
+// update the label under image
 const updateLabel = (title) => {
   const label = document.getElementById("label");
-  label.innerHTML = title;
+  label.value = title;
 };
 
+// event handler for sidebar items
 const handleChange = (e) => {
   const title = e.currentTarget.children[1].innerHTML.trim();
   currentItem = title;
-
   setAsActive(e);
   updateImage(title);
   updateLabel(title);
 };
 
-const init = () => {
+// update the DOM on startup
+const updateDOM = () => {
   const sidebar = document.getElementById("sidebar");
-
+  // create sidebar items
   data.forEach((item, i) => {
     const div = document.createElement("div");
     div.classList.add("item");
@@ -77,16 +78,36 @@ const init = () => {
     }
 
     div.innerHTML = `
-          <img src="${item.previewImage}" class="thumbnail" />
-          <div class="title">
-          ${item.title}
-          </div>
-          `;
+            <img src="${item.previewImage}" class="thumbnail" />
+            <div class="title">
+            ${item.title}
+            </div>
+            `;
     div.addEventListener("click", handleChange);
     sidebar.appendChild(div);
   });
   updateImage(currentItem);
   updateLabel(currentItem);
+};
+// propagate label changes to DOM
+const propagateTitleChange = (newTitle) => {
+  const activeItem = document.querySelector(".active-item");
+  activeItem.children[1].innerHTML = newTitle;
+};
+
+// init the app on startup
+const init = () => {
+  updateDOM();
+  const label = document.getElementById("label");
+  label.addEventListener("input", (e) => {
+    const title = e.currentTarget.value.trim();
+    // update data array
+    const index = data.findIndex((item) => item.title === currentItem);
+    data[index].title = title;
+    // propagate changes to DOM
+    propagateTitleChange(title);
+    currentItem = title;
+  });
 };
 
 window.onload = init;
