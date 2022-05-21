@@ -113,6 +113,23 @@ const init = () => {
     propagateTitleChange(title);
     currentItem = title;
   });
+  // keyboard events listener
+  document.addEventListener("keydown", (e) => {
+    const key = e.code;
+    if (key == "ArrowUp") {
+      const activeItem = document.querySelector(".active-item");
+      const prevItem = activeItem.previousElementSibling;
+      if (prevItem) {
+        prevItem.click();
+      }
+    } else if (key == "ArrowDown") {
+      const activeItem = document.querySelector(".active-item");
+      const nextItem = activeItem.nextElementSibling;
+      if (nextItem) {
+        nextItem.click();
+      }
+    }
+  });
 };
 
 window.onload = init;
