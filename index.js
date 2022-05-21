@@ -29,19 +29,16 @@ const data = [
 
 // keeping track of the current active item
 var currentItem = data[0].title;
-
 // remove instructions from page
 const removeInstructions = () => {
   const instructions = document.getElementById("instructions");
   instructions.remove();
 };
-
 // utility function to get title from short name
 const getTitleFromShortName = (shortName) => {
   const item = data.find((item) => item.shortName === shortName);
   return item.title;
 };
-
 // short name will be used as the new title in sidebar
 const getShortNameFromTitle = (title) => {
   // if title is large, shorten it by adding ... in the middle
@@ -54,7 +51,6 @@ const getShortNameFromTitle = (title) => {
   }
   return title;
 };
-
 // set the item as active in sidebar
 const setAsActive = (e) => {
   const items = document.querySelectorAll(".item");
@@ -63,25 +59,21 @@ const setAsActive = (e) => {
   });
   e.currentTarget.classList.add("active-item");
 };
-
 // update the image in the main section
 const updateImage = (title) => {
   const image = document.getElementById("image");
   const item = data.find((item) => item.title === title);
-
   // image styles
   image.style.background = `url("${item.previewImage}")`;
   image.style.backgroundRepeat = "no-repeat";
   image.style.backgroundPosition = "center center";
   image.style.backgroundSize = "cover";
 };
-
 // update the label under image
 const updateLabel = (title) => {
   const label = document.getElementById("label");
   label.value = title;
 };
-
 // event handler for sidebar items
 const handleChange = (e) => {
   const shortName = e.currentTarget.children[1].innerHTML.trim();
@@ -91,7 +83,6 @@ const handleChange = (e) => {
   updateImage(title);
   updateLabel(title);
 };
-
 // update the DOM on startup
 const updateDOM = () => {
   const sidebar = document.getElementById("sidebar");
