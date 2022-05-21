@@ -92,6 +92,8 @@ html, body {
     border: none;
     width: 70%;
     text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .label:hover{

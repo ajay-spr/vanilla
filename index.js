@@ -36,6 +36,25 @@ const removeInstructions = () => {
   instructions.remove();
 };
 
+// utility function to get title from short name
+const getTitleFromShortName = (shortName) => {
+  const item = data.find((item) => item.shortName === shortName);
+  return item.title;
+};
+
+// short name will be used as the new title in sidebar
+const getShortNameFromTitle = (title) => {
+  // if title is large, shorten it by adding ... in the middle
+  if (title.length > 30) {
+    return (
+      title.substring(0, 16) +
+      "..." +
+      title.substring(title.length - 10, title.length)
+    );
+  }
+  return title;
+};
+
 // set the item as active in sidebar
 const setAsActive = (e) => {
   const items = document.querySelectorAll(".item");
@@ -65,7 +84,8 @@ const updateLabel = (title) => {
 
 // event handler for sidebar items
 const handleChange = (e) => {
-  const title = e.currentTarget.children[1].innerHTML.trim();
+  const shortName = e.currentTarget.children[1].innerHTML.trim();
+  const title = getTitleFromShortName(shortName);
   currentItem = title;
   setAsActive(e);
   updateImage(title);
@@ -77,6 +97,7 @@ const updateDOM = () => {
   const sidebar = document.getElementById("sidebar");
   // create sidebar items
   data.forEach((item, i) => {
+    item.shortName = getShortNameFromTitle(item.title);
     const div = document.createElement("div");
     div.classList.add("item");
     if (item.title === currentItem) {
@@ -86,7 +107,7 @@ const updateDOM = () => {
     div.innerHTML = `
             <img src="${item.previewImage}" class="thumbnail" />
             <div class="title">
-            ${item.title}
+            ${item.shortName}
             </div>
             `;
     div.addEventListener("click", handleChange);
@@ -96,9 +117,9 @@ const updateDOM = () => {
   updateLabel(currentItem);
 };
 // propagate label changes to DOM
-const propagateTitleChange = (newTitle) => {
+const propagateTitleChange = (newShortName) => {
   const activeItem = document.querySelector(".active-item");
-  activeItem.children[1].innerHTML = newTitle;
+  activeItem.children[1].innerHTML = newShortName;
 };
 // init the app on startup
 const init = () => {
@@ -106,11 +127,13 @@ const init = () => {
   const label = document.getElementById("label");
   label.addEventListener("input", (e) => {
     const title = e.currentTarget.value.trim();
-    // update data array
+    const shortName = getShortNameFromTitle(title);
+    // update item in data array
     const index = data.findIndex((item) => item.title === currentItem);
     data[index].title = title;
+    data[index].shortName = shortName;
     // propagate changes to DOM
-    propagateTitleChange(title);
+    propagateTitleChange(shortName);
     currentItem = title;
   });
   // keyboard events listener
