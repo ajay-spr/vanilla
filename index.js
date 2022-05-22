@@ -29,28 +29,84 @@ const data = [
 
 // keeping track of the current active item
 var currentItem = data[0].title;
+
 // remove instructions from page
 const removeInstructions = () => {
   const instructions = document.getElementById("instructions");
   instructions.remove();
 };
+
 // utility function to get title from short name
 const getTitleFromShortName = (shortName) => {
   const item = data.find((item) => item.shortName === shortName);
   return item.title;
 };
+
+// function to get Text Width for a particular font size
+const getTextWidth = (pText, pFontSize) => {
+  var lDiv = document.createElement("div");
+  document.body.appendChild(lDiv);
+
+  lDiv.style.fontSize = "" + pFontSize + "px";
+  lDiv.style.fontWeight = 500;
+  lDiv.style.position = "absolute";
+  lDiv.style.left = -1000;
+  lDiv.style.top = -1000;
+  lDiv.textContent = pText;
+
+  var width = lDiv.clientWidth;
+
+  document.body.removeChild(lDiv);
+  lDiv = null;
+
+  return width;
+};
+
+// calculating first part of the shortened title
+const calculateFirstHalfLength = (title, maxLength) => {
+  let length = 0;
+  const fontSize = 16;
+  // this can be optimized further using binary search instead of looping
+  for (let i = 0; i < title.length; i++) {
+    length = getTextWidth(title.substring(0, i), fontSize);
+    if (length > maxLength) {
+      return i;
+    }
+  }
+  return title.length;
+};
+
+// calculating second part of the shortened title
+const calculateSecondHalfLength = (title, maxLength) => {
+  let length = 0;
+  const fontSize = 16;
+  for (let i = title.length - 1; i >= 0; i--) {
+    length = getTextWidth(title.substring(i, title.length), fontSize);
+    if (length > maxLength) {
+      return title.length - i;
+    }
+  }
+  return title.length;
+};
+
 // short name will be used as the new title in sidebar
 const getShortNameFromTitle = (title) => {
-  // if title is large, shorten it by adding ... in the middle
-  if (title.length > 30) {
+  const sidebar = document.getElementById("sidebar");
+  const sidebarWidth = parseInt(sidebar.offsetWidth * 0.65);
+  const firstHalfLength = calculateFirstHalfLength(title, sidebarWidth / 2);
+  const secondHalfLength = calculateSecondHalfLength(title, sidebarWidth / 2);
+  const maxCharacters = firstHalfLength + secondHalfLength + 1;
+
+  if (title.length > maxCharacters) {
     return (
-      title.substring(0, 16) +
+      title.substring(0, firstHalfLength) +
       "..." +
-      title.substring(title.length - 10, title.length)
+      title.substring(title.length - secondHalfLength, title.length)
     );
   }
   return title;
 };
+
 // set the item as active in sidebar
 const setAsActive = (e) => {
   const items = document.querySelectorAll(".item");
@@ -59,6 +115,7 @@ const setAsActive = (e) => {
   });
   e.currentTarget.classList.add("active-item");
 };
+
 // update the image in the main section
 const updateImage = (title) => {
   const image = document.getElementById("image");
@@ -69,11 +126,13 @@ const updateImage = (title) => {
   image.style.backgroundPosition = "center center";
   image.style.backgroundSize = "cover";
 };
+
 // update the label under image
 const updateLabel = (title) => {
   const label = document.getElementById("label");
   label.value = title;
 };
+
 // event handler for sidebar items
 const handleChange = (e) => {
   const shortName = e.currentTarget.children[1].innerHTML.trim();
@@ -83,11 +142,11 @@ const handleChange = (e) => {
   updateImage(title);
   updateLabel(title);
 };
+
 // update the DOM on startup
 const updateDOM = () => {
   const sidebar = document.getElementById("sidebar");
-  // create sidebar items
-  data.forEach((item, i) => {
+  data.forEach((item) => {
     item.shortName = getShortNameFromTitle(item.title);
     const div = document.createElement("div");
     div.classList.add("item");
@@ -107,11 +166,13 @@ const updateDOM = () => {
   updateImage(currentItem);
   updateLabel(currentItem);
 };
+
 // propagate label changes to DOM
 const propagateTitleChange = (newShortName) => {
   const activeItem = document.querySelector(".active-item");
   activeItem.children[1].innerHTML = newShortName;
 };
+
 // init the app on startup
 const init = () => {
   updateDOM();
@@ -119,14 +180,15 @@ const init = () => {
   label.addEventListener("input", (e) => {
     const title = e.currentTarget.value.trim();
     const shortName = getShortNameFromTitle(title);
-    // update item in data array
+
     const index = data.findIndex((item) => item.title === currentItem);
     data[index].title = title;
     data[index].shortName = shortName;
-    // propagate changes to DOM
+
     propagateTitleChange(shortName);
     currentItem = title;
   });
+
   // keyboard events listener
   document.addEventListener("keydown", (e) => {
     const key = e.code;
