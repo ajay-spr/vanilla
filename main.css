@@ -176,6 +176,8 @@ html, body {
     .title{
         flex: 1;
         text-align: center;
+        inline-size: 100px;
+        overflow-wrap: break-word;
     }
 
     .content{
