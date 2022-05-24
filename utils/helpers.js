@@ -47,28 +47,33 @@ const propagateTitleChange = (newShortName) => {
   activeItem.children[1].innerHTML = newShortName;
 };
 
+const createSidebarItem = (item) => {
+  item.shortName = getShortNameFromTitle(item.title);
+  const div = document.createElement("div");
+  div.classList.add("item");
+  if (item.title === currentItem) {
+    div.classList.add("active-item");
+  }
+
+  const image = document.createElement("img");
+  image.src = item.previewImage;
+  image.classList.add("thumbnail");
+  div.appendChild(image);
+
+  const title = document.createElement("div");
+  title.classList.add("title");
+  title.innerHTML = item.shortName;
+  div.appendChild(title);
+
+  div.addEventListener("click", handleChange);
+  return div;
+};
+
 // update the DOM on startup
 export const updateDOM = () => {
   const sidebar = document.getElementById("sidebar");
   data.forEach((item) => {
-    item.shortName = getShortNameFromTitle(item.title);
-    const div = document.createElement("div");
-    div.classList.add("item");
-    if (item.title === currentItem) {
-      div.classList.add("active-item");
-    }
-
-    const image = document.createElement("img");
-    image.src = item.previewImage;
-    image.classList.add("thumbnail");
-    div.appendChild(image);
-
-    const title = document.createElement("div");
-    title.classList.add("title");
-    title.innerHTML = item.shortName;
-    div.appendChild(title);
-
-    div.addEventListener("click", handleChange);
+    const div = createSidebarItem(item);
     sidebar.appendChild(div);
   });
   updateImage(currentItem, data);
